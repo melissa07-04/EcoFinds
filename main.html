@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoFinds - Sustainable Second-Hand Marketplace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #E6F3FF 0%, #C8E6C9 100%);
+      color: #212121;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .fade-in { animation: fadeIn 0.7s ease-in; }
+    .fade-in-up { animation: fadeInUp 0.9s ease-out; }
+    .slide-up { animation: slideUp 0.7s ease-out; }
+    .swing-in { animation: swingIn 0.8s ease-in-out; }
+    .float { animation: float 3s ease-in-out infinite; }
+    .hover-scale { transition: transform 0.3s ease-in-out, box-shadow 0.3s ease; }
+    .hover-scale:hover { transform: scale(1.06); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
+    .hover-glow { transition: box-shadow 0.3s ease, transform 0.3s ease; }
+    .hover-glow:hover { box-shadow: 0 0 15px rgba(56, 142, 60, 0.6); transform: translateY(-2px); }
+    .spin-hover { transition: transform 0.5s ease; }
+    .spin-hover:hover { transform: rotate(360deg); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes swingIn { from { transform: rotate(15deg); opacity: 0; } to { transform: rotate(0); opacity: 1; } }
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+    @keyframes glow { 0% { box-shadow: 0 0 5px rgba(56, 142, 60, 0.3); } 50% { box-shadow: 0 0 20px rgba(56, 142, 60, 0.7); } 100% { box-shadow: 0 0 5px rgba(56, 142, 60, 0.3); } }
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: linear-gradient(90deg, #388E3C 0%, #66BB6A 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+    .product-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 1rem;
+      border: 3px solid #388E3C;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .product-img:hover { transform: scale(1.04); box-shadow: 0 0 10px rgba(56, 142, 60, 0.5); }
+    .no-img { background: #F5F5F5; }
+    .btn-primary {
+      background: #388E3C;
+      transition: background-color 0.3s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #2F7D32;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(56, 142, 60, 0.5);
+      animation: glow 1.5s infinite;
+    }
+    .btn-primary:disabled {
+      background: #A5D6A7;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .input-field {
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      border-color: #B0BEC5;
+      backdrop-filter: blur(3px);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .input-field:focus {
+      border-color: #388E3C;
+      box-shadow: 0 0 0 4px rgba(56, 142, 60, 0.2);
+    }
+    .nav-link { position: relative; color: #FFFFFF; font-weight: 600; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #FF9800;
+      border-radius: 2px;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      border: 1px solid rgba(56, 142, 60, 0.1);
+    }
+    .heartbeat {
+      animation: heartbeat 1.5s infinite;
+    }
+    @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .detail-info { margin-top: 1rem; }
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #388E3C;
+    }
+    .profile-pic.no-img { background: #F5F5F5; }
+    .logo-img {
+      height: 40px;
+      width: auto;
+    }
+    @media (max-width: 640px) {
+      .product-img { height: 150px; }
+      .container { padding: 0 0.5rem; }
+      .nav-link { font-size: 0.85rem; }
+      .btn-primary { padding: 0.75rem; }
+      .image-gallery { grid-template-columns: 1fr; }
+      .detail-info { font-size: 0.9rem; }
+      .profile-pic { width: 80px; height: 80px; }
+      .logo-img { height: 32px; }
+    }
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .product-img { height: 180px; }
+      .container { padding: 0 1.5rem; }
+      .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1025px) {
+      .container { max-width: 1280px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="text-white p-4 sticky-header">
+    <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 swing-in">
+      <img src="logo.jpg" alt="EcoFinds Logo" class="logo-img spin-hover hover-glow">
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <input id="searchBar" type="text" placeholder="Search products..." class="p-2 rounded-md text-black w-full sm:w-80 input-field border border-B0BEC5 hidden sm:block">
+        <nav class="flex flex-wrap gap-4 sm:gap-6">
+          <button onclick="showScreen('feed-screen')" class="nav-link hover:underline hover-glow" id="nav-home">Home</button>
+          <button onclick="showScreen('dashboard-screen')" class="nav-link hover:underline hover-glow" id="nav-dashboard">Dashboard</button>
+          <button onclick="showScreen('cart-screen')" class="nav-link hover:underline hover-glow" id="nav-cart">Cart</button>
+          <button onclick="showScreen('purchases-screen')" class="nav-link hover:underline hover-glow" id="nav-purchases">Purchases</button>
+          <button onclick="showScreen('profile-screen')" class="nav-link hover:underline hover-glow" id="nav-profile">Profile</button>
+          <button onclick="logout()" class="nav-link hover:underline hover-glow" id="nav-logout">Logout</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Search Bar -->
+  <div class="container mx-auto p-4 sm:hidden">
+    <input id="mobileSearchBar" type="text" placeholder="Search products..." class="p-2 rounded-md w-full text-black input-field border border-B0BEC5">
+  </div>
+
+  <!-- User Profile Screen -->
+  <div id="profile-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('dashboard-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">My Profile</h2>
+    </div>
+    <div class="glass-card p-6 rounded-xl shadow-lg max-w-md mx-auto slide-up">
+      <div class="flex flex-col items-center mb-6">
+        <img id="profilePic" src="" alt="Profile Picture" class="profile-pic mb-4">
+        <button onclick="editProfile()" class="btn-primary text-white px-4 py-2 rounded-md hover-glow">Edit</button>
+      </div>
+      <div class="text-center">
+        <p><strong>Name:</strong> <span id="userName">Apt Mongoose</span></p>
+        <p><strong>Email:</strong> <span id="userEmail">apt.mongoose@example.com</span></p>
+        <p><strong>Joined:</strong> <span id="userJoined">September 06, 2025</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Screen -->
+  <div id="edit-profile-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('profile-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">Edit Profile</h2>
+    </div>
+    <div class="glass-card p-6 rounded-xl shadow-lg max-w-md mx-auto slide-up">
+      <div class="flex flex-col items-center mb-6">
+        <img id="editProfilePic" src="" alt="Profile Picture" class="profile-pic mb-4">
+        <input id="editProfileImage" type="file" accept="image/*" class="w-full mb-4 input-field">
+      </div>
+      <input id="editUserName" type="text" placeholder="Name" class="w-full p-3 mb-4 border rounded-md input-field" value="Apt Mongoose">
+      <input id="editUserEmail" type="email" placeholder="Email" class="w-full p-3 mb-4 border rounded-md input-field" value="apt.mongoose@example.com" disabled>
+      <button onclick="saveProfile()" class="w-full btn-primary text-white p-3 rounded-lg hover-glow">Save</button>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div id="login-screen" class="flex items-center justify-center min-h-screen bg-C8E6C9 fade-in">
+    <div class="glass-card p-6 rounded-xl shadow-lg w-full max-w-md slide-up">
+      <h2 class="text-4xl font-bold text-center mb-6 text-388E3C fade-in-up">EcoFinds Login</h2>
+      <input id="loginEmail" type="email" placeholder="Email" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="loginPassword" type="password" placeholder="Password" class="w-full p-3 mb-4 border rounded-md input-field">
+      <button onclick="login()" class="w-full btn-primary text-white p-3 rounded-lg hover-glow">Login</button>
+      <p class="mt-4 text-center text-616161">
+        Don’t have an account? <button onclick="showScreen('signup-screen')" class="text-388E3C hover:underline hover-glow">Sign Up</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- Signup Screen -->
+  <div id="signup-screen" class="hidden flex items-center justify-center min-h-screen bg-C8E6C9 fade-in">
+    <div class="glass-card p-6 rounded-xl shadow-lg w-full max-w-md slide-up">
+      <h2 class="text-4xl font-bold text-center mb-6 text-388E3C fade-in-up">EcoFinds Sign Up</h2>
+      <input id="signupEmail" type="email" placeholder="Email" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="signupPassword" type="password" placeholder="Password" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="signupConfirm" type="password" placeholder="Confirm Password" class="w-full p-3 mb-4 border rounded-md input-field">
+      <button onclick="signup()" class="w-full btn-primary text-white p-3 rounded-lg hover-glow">Sign Up</button>
+      <button onclick="showScreen('login-screen')" class="mt-4 text-388E3C hover:underline hover-glow">Back to Login</button>
+    </div>
+  </div>
+
+  <!-- Product Feed Screen -->
+  <div id="feed-screen" class="hidden p-4 container mx-auto">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 swing-in">
+      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <select id="filterCategory" class="p-2 border rounded-md input-field bg-F5F5F5 text-212121">
+          <option value="">All Categories</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Books">Books</option>
+          <option value="Other">Other</option>
+        </select>
+        <select id="sortBy" class="p-2 border rounded-md input-field bg-F5F5F5 text-212121">
+          <option value="">Sort By</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="title-asc">Title: A-Z</option>
+        </select>
+        <select id="groupBy" class="p-2 border rounded-md input-field bg-F5F5F5 text-212121">
+          <option value="">No Grouping</option>
+          <option value="category">Group by Category</option>
+        </select>
+      </div>
+    </div>
+    <div id="feedList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up"></div>
+    <button onclick="showScreen('add-product-screen')" class="fixed bottom-6 right-6 btn-primary text-white p-4 rounded-full shadow-lg hover-glow heartbeat">+ Add Product</button>
+  </div>
+
+  <!-- Add Product Screen -->
+  <div id="add-product-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('feed-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">Add New Product</h2>
+    </div>
+    <div class="glass-card p-6 rounded-xl shadow-lg max-w-md mx-auto slide-up">
+      <input id="prodTitle" type="text" placeholder="Product Title" class="w-full p-3 mb-4 border rounded-md input-field">
+      <select id="prodCat" class="w-full p-3 mb-4 border rounded-md input-field bg-F5F5F5 text-212121">
+        <option value="Clothing">Clothing</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Books">Books</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="prodDesc" placeholder="Description" class="w-full p-3 mb-4 border rounded-md input-field"></textarea>
+      <input id="prodPrice" type="number" step="0.01" placeholder="Price" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodCondition" type="text" placeholder="Condition (e.g., New, Used)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodBrand" type="text" placeholder="Brand" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodSize" type="text" placeholder="Size (e.g., M, 42, Large)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodWeight" type="text" placeholder="Weight (e.g., 1.5 kg)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodMaterial" type="text" placeholder="Material (e.g., Cotton, Plastic)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodColor" type="text" placeholder="Color (e.g., Blue, Black)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="prodQuantity" type="number" step="1" placeholder="Quantity" class="w-full p-3 mb-4 border rounded-md input-field">
+      <textarea id="prodWorkingCondition" placeholder="Working Condition Description" class="w-full p-3 mb-4 border rounded-md input-field"></textarea>
+      <input id="prodImages" type="file" accept="image/*" multiple class="w-full p-3 mb-4 border rounded-md input-field">
+      <button id="submitListingBtn" onclick="addProduct(event)" class="w-full btn-primary text-white p-3 rounded-lg hover-glow">Submit Listing</button>
+    </div>
+  </div>
+
+  <!-- Edit Product Screen -->
+  <div id="edit-product-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('dashboard-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">Edit Product</h2>
+    </div>
+    <div class="glass-card p-6 rounded-xl shadow-lg max-w-md mx-auto slide-up">
+      <input id="editProdTitle" type="text" placeholder="Product Title" class="w-full p-3 mb-4 border rounded-md input-field">
+      <select id="editProdCat" class="w-full p-3 mb-4 border rounded-md input-field bg-F5F5F5 text-212121">
+        <option value="Clothing">Clothing</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Books">Books</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="editProdDesc" placeholder="Description" class="w-full p-3 mb-4 border rounded-md input-field"></textarea>
+      <input id="editProdPrice" type="number" step="0.01" placeholder="Price" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdCondition" type="text" placeholder="Condition (e.g., New, Used)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdBrand" type="text" placeholder="Brand" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdSize" type="text" placeholder="Size (e.g., M, 42, Large)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdWeight" type="text" placeholder="Weight (e.g., 1.5 kg)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdMaterial" type="text" placeholder="Material (e.g., Cotton, Plastic)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdColor" type="text" placeholder="Color (e.g., Blue, Black)" class="w-full p-3 mb-4 border rounded-md input-field">
+      <input id="editProdQuantity" type="number" step="1" placeholder="Quantity" class="w-full p-3 mb-4 border rounded-md input-field">
+      <textarea id="editProdWorkingCondition" placeholder="Working Condition Description" class="w-full p-3 mb-4 border rounded-md input-field"></textarea>
+      <input id="editProdImages" type="file" accept="image/*" multiple class="w-full p-3 mb-4 border rounded-md input-field">
+      <button onclick="updateProduct()" class="w-full btn-primary text-white p-3 rounded-lg hover-glow">Update Listing</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="dashboard-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('feed-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">My Dashboard</h2>
+    </div>
+    <div class="mb-6">
+      <button onclick="showScreen('profile-screen')" class="btn-primary text-white px-4 py-2 rounded-md hover-glow">View Profile</button>
+    </div>
+    <h3 class="text-2xl font-semibold mb-4 text-616161">My Listings</h3>
+    <div id="myListings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up"></div>
+  </div>
+
+  <!-- Cart Screen -->
+  <div id="cart-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('feed-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">My Cart</h2>
+    </div>
+    <div id="cartList" class="space-y-4"></div>
+    <button onclick="checkout()" class="mt-6 btn-primary text-white px-6 py-3 rounded-lg hover-glow">Checkout</button>
+  </div>
+
+  <!-- Purchases Screen -->
+  <div id="purchases-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('feed-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">Previous Purchases</h2>
+    </div>
+    <div id="purchaseList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up"></div>
+  </div>
+
+  <!-- Product Detail Screen -->
+  <div id="product-detail-screen" class="hidden p-4 container mx-auto">
+    <div class="flex items-center mb-6">
+      <button onclick="showScreen('feed-screen')" class="text-388E3C hover:underline hover-glow">Back</button>
+      <h2 class="text-4xl font-bold ml-4 text-388E3C fade-in-up">Product Details</h2>
+    </div>
+    <div class="glass-card p-6 rounded-xl shadow-lg max-w-2xl mx-auto slide-up">
+      <h3 id="detailTitle" class="text-3xl font-bold text-212121 mb-4"></h3>
+      <p id="detailDesc" class="text-lg text-757575 mb-4"></p>
+      <p id="detailPrice" class="text-xl text-616161 mb-4"></p>
+      <p id="detailCategory" class="text-md text-9E9E9E mb-4"></p>
+      <div id="detailImages" class="image-gallery"></div>
+      <div class="detail-info">
+        <p><strong>Condition:</strong> <span id="detailCondition"></span></p>
+        <p><strong>Brand:</strong> <span id="detailBrand"></span></p>
+        <p><strong>Size:</strong> <span id="detailSize"></span></p>
+        <p><strong>Weight:</strong> <span id="detailWeight"></span></p>
+        <p><strong>Material:</strong> <span id="detailMaterial"></span></p>
+        <p><strong>Color:</strong> <span id="detailColor"></span></p>
+        <p><strong>Quantity:</strong> <span id="detailQuantity"></span></p>
+        <p><strong>Working Condition:</strong> <span id="detailWorkingCondition"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let editingProductTitle = null;
+
+    function showScreen(screenId) {
+      document.querySelectorAll('div[id$="-screen"]').forEach(s => s.classList.add('hidden'));
+      const screen = document.getElementById(screenId);
+      if (screen) {
+        screen.classList.remove('hidden');
+      } else {
+        console.error(`Screen with ID ${screenId} not found`);
+        return;
+      }
+      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+      const navLink = document.getElementById(`nav-${screenId.split('-')[0]}`);
+      if (navLink) navLink.classList.add('active');
+      if (screenId === "feed-screen") showFeed();
+      if (screenId === "dashboard-screen") showListings();
+      if (screenId === "cart-screen") showCart();
+      if (screenId === "purchases-screen") showPurchases();
+      if (screenId === "profile-screen") showProfile();
+    }
+
+    function signup() {
+      const email = document.getElementById("signupEmail").value.trim();
+      const pass = document.getElementById("signupPassword").value.trim();
+      const confirm = document.getElementById("signupConfirm").value.trim();
+      if (!email || !pass || !confirm) {
+        alert("All fields are required");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Invalid email format");
+        return;
+      }
+      if (pass.length < 6) {
+        alert("Password must be at least 6 characters");
+        return;
+      }
+      if (pass !== confirm) {
+        alert("Passwords do not match");
+        return;
+      }
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+      if (users[email]) {
+        alert("User already exists");
+        return;
+      }
+      users[email] = { password: pass, products: [], name: "Apt Mongoose", profilePic: "", joined: new Date().toLocaleDateString() };
+      localStorage.setItem("users", JSON.stringify(users));
+      currentUser = { email };
+      localStorage.setItem("currentUser", email);
+      alert("Sign up successful!");
+      showScreen("feed-screen");
+    }
+
+    function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const pass = document.getElementById("loginPassword").value.trim();
+      if (!email || !pass) {
+        alert("All fields are required");
+        return;
+      }
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+      if (users[email] && users[email].password === pass) {
+        currentUser = { email };
+        localStorage.setItem("currentUser", email);
+        alert("Login successful!");
+        showScreen("feed-screen");
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem("currentUser");
+      document.getElementById("searchBar").value = "";
+      document.getElementById("mobileSearchBar").value = "";
+      document.getElementById("filterCategory").value = "";
+      document.getElementById("sortBy").value = "";
+      document.getElementById("groupBy").value = "";
+      alert("Logged out successfully!");
+      showScreen("login-screen");
+    }
+
+    function addProduct(event) {
+      event.preventDefault();
+      if (!currentUser) {
+        alert("Please log in to add a product.");
+        showScreen("login-screen");
+        return;
+      }
+      const title = document.getElementById("prodTitle").value.trim();
+      const category = document.getElementById("prodCat").value;
+      const description = document.getElementById("prodDesc").value.trim();
+      const price = document.getElementById("prodPrice").value.trim();
+      const condition = document.getElementById("prodCondition").value.trim();
+      const brand = document.getElementById("prodBrand").value.trim();
+      const size = document.getElementById("prodSize").value.trim();
+      const weight = document.getElementById("prodWeight").value.trim();
+      const material = document.getElementById("prodMaterial").value.trim();
+      const color = document.getElementById("prodColor").value.trim();
+      const quantity = document.getElementById("prodQuantity").value.trim();
+      const workingCondition = document.getElementById("prodWorkingCondition").value.trim();
+      const imageInput = document.getElementById("prodImages");
+      if (!title || !price) {
+        alert("Title and price are required");
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        alert("Price must be a positive number");
+        return;
+      }
+      if (quantity && (isNaN(quantity) || quantity <= 0)) {
+        alert("Quantity must be a positive number");
+        return;
+      }
+      let images = [];
+      if (imageInput.files && imageInput.files.length > 0) {
+        for (let file of imageInput.files) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            images.push(e.target.result);
+            if (images.length === imageInput.files.length) {
+              saveProduct(images);
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        saveProduct(images);
+      }
+
+      function saveProduct(images) {
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        products.push({ title, category, description, price, condition, brand, size, weight, material, color, quantity, workingCondition, images, owner: currentUser.email });
+        localStorage.setItem("products", JSON.stringify(products));
+        alert("Product added successfully!");
+        document.getElementById("prodTitle").value = "";
+        document.getElementById("prodDesc").value = "";
+        document.getElementById("prodPrice").value = "";
+        document.getElementById("prodCondition").value = "";
+        document.getElementById("prodBrand").value = "";
+        document.getElementById("prodSize").value = "";
+        document.getElementById("prodWeight").value = "";
+        document.getElementById("prodMaterial").value = "";
+        document.getElementById("prodColor").value = "";
+        document.getElementById("prodQuantity").value = "";
+        document.getElementById("prodWorkingCondition").value = "";
+        document.getElementById("prodImages").value = "";
+        showScreen("feed-screen");
+      }
+    }
+
+    function editProduct(title) {
+      if (!currentUser) {
+        alert("Please log in to edit a product.");
+        showScreen("login-screen");
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      const product = products.find(p => p.title === title && p.owner === currentUser.email);
+      if (!product) {
+        alert("Product not found or you do not have permission to edit it.");
+        return;
+      }
+      editingProductTitle = title;
+      document.getElementById("editProdTitle").value = product.title;
+      document.getElementById("editProdCat").value = product.category;
+      document.getElementById("editProdDesc").value = product.description;
+      document.getElementById("editProdPrice").value = product.price;
+      document.getElementById("editProdCondition").value = product.condition || '';
+      document.getElementById("editProdBrand").value = product.brand || '';
+      document.getElementById("editProdSize").value = product.size || '';
+      document.getElementById("editProdWeight").value = product.weight || '';
+      document.getElementById("editProdMaterial").value = product.material || '';
+      document.getElementById("editProdColor").value = product.color || '';
+      document.getElementById("editProdQuantity").value = product.quantity || '';
+      document.getElementById("editProdWorkingCondition").value = product.workingCondition || '';
+      document.getElementById("editProdImages").value = "";
+      showScreen("edit-product-screen");
+    }
+
+    function updateProduct() {
+      if (!currentUser) {
+        alert("Please log in to update a product.");
+        showScreen("login-screen");
+        return;
+      }
+      const title = document.getElementById("editProdTitle").value.trim();
+      const category = document.getElementById("editProdCat").value;
+      const description = document.getElementById("editProdDesc").value.trim();
+      const price = document.getElementById("editProdPrice").value.trim();
+      const condition = document.getElementById("editProdCondition").value.trim();
+      const brand = document.getElementById("editProdBrand").value.trim();
+      const size = document.getElementById("editProdSize").value.trim();
+      const weight = document.getElementById("editProdWeight").value.trim();
+      const material = document.getElementById("editProdMaterial").value.trim();
+      const color = document.getElementById("editProdColor").value.trim();
+      const quantity = document.getElementById("editProdQuantity").value.trim();
+      const workingCondition = document.getElementById("editProdWorkingCondition").value.trim();
+      const imageInput = document.getElementById("editProdImages");
+      if (!title || !price) {
+        alert("Title and price are required");
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        alert("Price must be a positive number");
+        return;
+      }
+      if (quantity && (isNaN(quantity) || quantity <= 0)) {
+        alert("Quantity must be a positive number");
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      const productIndex = products.findIndex(p => p.title === editingProductTitle && p.owner === currentUser.email);
+      if (productIndex === -1) {
+        alert("Product not found or you do not have permission to edit it.");
+        return;
+      }
+      let images = products[productIndex].images || [];
+      if (imageInput.files && imageInput.files.length > 0) {
+        images = [];
+        for (let file of imageInput.files) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            images.push(e.target.result);
+            if (images.length === imageInput.files.length) {
+              saveUpdatedProduct();
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        saveUpdatedProduct();
+      }
+
+      function saveUpdatedProduct() {
+        products[productIndex] = { title, category, description, price, condition, brand, size, weight, material, color, quantity, workingCondition, images, owner: currentUser.email };
+        localStorage.setItem("products", JSON.stringify(products));
+        alert("Product updated successfully!");
+        document.getElementById("editProdImages").value = "";
+        showScreen("dashboard-screen");
+      }
+    }
+
+    function showFeed() {
+      const searchQuery = (document.getElementById("searchBar").value || document.getElementById("mobileSearchBar").value).toLowerCase().trim();
+      const filterCategory = document.getElementById("filterCategory").value;
+      const sortBy = document.getElementById("sortBy").value;
+      const groupBy = document.getElementById("groupBy").value;
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      if (searchQuery) {
+        products = products.filter(p => 
+          p.title.toLowerCase().includes(searchQuery) || 
+          p.category.toLowerCase().includes(searchQuery) || 
+          p.description.toLowerCase().includes(searchQuery)
+        );
+      }
+      if (filterCategory) {
+        products = products.filter(p => p.category === filterCategory);
+      }
+      if (sortBy) {
+        products.sort((a, b) => {
+          if (sortBy === "price-asc") return a.price - b.price;
+          if (sortBy === "price-desc") return b.price - a.price;
+          if (sortBy === "title-asc") return a.title.localeCompare(b.title);
+          return 0;
+        });
+      }
+      let html = "";
+      if (groupBy === "category") {
+        const categories = [...new Set(products.map(p => p.category))];
+        html = categories.map(category => {
+          const categoryProducts = products.filter(p => p.category === category);
+          return `
+            <div class="mb-10">
+              <h3 class="text-2xl font-semibold text-616161 mb-6">${category}</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                ${categoryProducts.map((p, i) => `
+                  <div class="glass-card p-5 rounded-lg shadow-lg hover-scale" onclick="showProductDetail(${i})">
+                    <img src="${p.images[0] || ''}" class="product-img mb-4 ${!p.images[0] ? 'no-img' : ''}" alt="${p.title}">
+                    <h3 class="text-xl font-semibold text-212121">${p.title}</h3>
+                    <p class="text-757575">₹${p.price}</p>
+                    <p class="text-sm text-9E9E9E">${p.category}</p>
+                    <p class="text-sm text-757575 truncate">${p.description}</p>
+                    <button onclick="addToCart(${i}); event.stopPropagation();" class="mt-4 btn-primary text-white px-4 py-2 rounded-md hover-glow">Add to Cart</button>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+      } else {
+        html = products.map((p, i) => `
+          <div class="glass-card p-5 rounded-lg shadow-lg hover-scale" onclick="showProductDetail(${i})">
+            <img src="${p.images[0] || ''}" class="product-img mb-4 ${!p.images[0] ? 'no-img' : ''}" alt="${p.title}">
+            <h3 class="text-xl font-semibold text-212121">${p.title}</h3>
+            <p class="text-757575">₹${p.price}</p>
+            <p class="text-sm text-9E9E9E">${p.category}</p>
+            <p class="text-sm text-757575 truncate">${p.description}</p>
+            <button onclick="addToCart(${i}); event.stopPropagation();" class="mt-4 btn-primary text-white px-4 py-2 rounded-md hover-glow">Add to Cart</button>
+          </div>
+        `).join("");
+      }
+      document.getElementById("feedList").innerHTML = html || "<p class='text-center text-757575 text-xl'>No products found.</p>";
+    }
+
+    function showListings() {
+      if (!currentUser) {
+        alert("Please log in to view your listings.");
+        showScreen("login-screen");
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      let mine = products.filter(p => p.owner === currentUser.email);
+      document.getElementById("myListings").innerHTML = mine.map((p, i) => `
+        <div class="glass-card p-5 rounded-lg shadow-lg hover-scale">
+          <img src="${p.images[0] || ''}" class="product-img mb-4 ${!p.images[0] ? 'no-img' : ''}" alt="${p.title}">
+          <h3 class="text-xl font-semibold text-212121">${p.title}</h3>
+          <p class="text-757575">₹${p.price}</p>
+          <div class="flex space-x-3 mt-4">
+            <button onclick="editProduct('${p.title}')" class="bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 hover-glow">Edit</button>
+            <button onclick="deleteListing('${p.title}')" class="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 hover-glow">Delete</button>
+          </div>
+        </div>
+      `).join("") || "<p class='text-center text-757575 text-xl'>No listings.</p>";
+    }
+
+    function deleteListing(title) {
+      if (!currentUser) {
+        alert("Please log in to delete a listing.");
+        showScreen("login-screen");
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      products = products.filter(p => !(p.title === title && p.owner === currentUser.email));
+      localStorage.setItem("products", JSON.stringify(products));
+      alert("Listing deleted successfully!");
+      showListings();
+    }
+
+    function addToCart(i) {
+      if (!currentUser) {
+        alert("Please log in to add items to cart.");
+        showScreen("login-screen");
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (products[i].owner === currentUser.email) {
+        alert("Cannot add your own product to cart");
+        return;
+      }
+      cart.push(products[i]);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Added to cart");
+    }
+
+    function showCart() {
+      if (!currentUser) {
+        alert("Please log in to view your cart.");
+        showScreen("login-screen");
+        return;
+      }
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cartList").innerHTML = cart.map((c, i) => `
+        <div class="glass-card p-5 rounded-lg shadow-lg flex items-center space-x-4">
+          <img src="${c.images[0] || ''}" class="product-img w-32 h-32 ${!c.images[0] ? 'no-img' : ''}" alt="${c.title}">
+          <div>
+            <h3 class="text-xl font-semibold text-212121">${c.title}</h3>
+            <p class="text-757575">₹${c.price}</p>
+          </div>
+          <button onclick="removeFromCart(${i})" class="btn-primary text-white px-3 py-2 rounded-md hover-glow">Remove</button>
+        </div>
+      `).join("") || "<p class='text-center text-757575 text-xl'>Cart is empty.</p>";
+    }
+
+    function removeFromCart(i) {
+      if (!currentUser) {
+        alert("Please log in to modify your cart.");
+        showScreen("login-screen");
+        return;
+      }
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.splice(i, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Item removed from cart");
+      showCart();
+    }
+
+    function checkout() {
+      if (!currentUser) {
+        alert("Please log in to checkout.");
+        showScreen("login-screen");
+        return;
+      }
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (cart.length === 0) {
+        alert("Cart is empty");
+        return;
+      }
+      let purchases = JSON.parse(localStorage.getItem("purchases")) || {};
+      if (!purchases[currentUser.email]) purchases[currentUser.email] = [];
+      purchases[currentUser.email] = purchases[currentUser.email].concat(cart);
+      localStorage.setItem("purchases", JSON.stringify(purchases));
+      localStorage.setItem("cart", JSON.stringify([]));
+      alert("Checkout complete!");
+      showPurchases();
+    }
+
+    function showPurchases() {
+      if (!currentUser) {
+        alert("Please log in to view your purchases.");
+        showScreen("login-screen");
+        return;
+      }
+      let purchases = JSON.parse(localStorage.getItem("purchases")) || {};
+      let mine = purchases[currentUser.email] || [];
+      document.getElementById("purchaseList").innerHTML = mine.map(p => `
+        <div class="glass-card p-5 rounded-lg shadow-lg hover-scale">
+          <img src="${p.images[0] || ''}" class="product-img mb-4 ${!p.images[0] ? 'no-img' : ''}" alt="${p.title}">
+          <h3 class="text-xl font-semibold text-212121">${p.title}</h3>
+          <p class="text-757575">₹${p.price}</p>
+          <p class="text-sm text-9E9E9E">${p.category}</p>
+        </div>
+      `).join("") || "<p class='text-center text-757575 text-xl'>No purchases yet.</p>";
+    }
+
+    function showProductDetail(index) {
+      let products = JSON.parse(localStorage.getItem("products")) || [];
+      if (index < 0 || index >= products.length) {
+        alert("Product not found.");
+        showScreen("feed-screen");
+        return;
+      }
+      let product = products[index];
+      document.getElementById("detailTitle").textContent = product.title;
+      document.getElementById("detailDesc").textContent = product.description;
+      document.getElementById("detailPrice").textContent = `Price: ₹${product.price}`;
+      document.getElementById("detailCategory").textContent = `Category: ${product.category}`;
+      document.getElementById("detailCondition").textContent = product.condition || 'Not specified';
+      document.getElementById("detailBrand").textContent = product.brand || 'Not specified';
+      document.getElementById("detailSize").textContent = product.size || 'Not specified';
+      document.getElementById("detailWeight").textContent = product.weight || 'Not specified';
+      document.getElementById("detailMaterial").textContent = product.material || 'Not specified';
+      document.getElementById("detailColor").textContent = product.color || 'Not specified';
+      document.getElementById("detailQuantity").textContent = product.quantity || 'Not specified';
+      document.getElementById("detailWorkingCondition").textContent = product.workingCondition || 'Not specified';
+      let imageHtml = '';
+      if (product.images && product.images.length > 0) {
+        product.images.forEach((img, idx) => {
+          imageHtml += `<img src="${img || ''}" class="product-img ${!img ? 'no-img' : ''}" alt="Product Image ${idx + 1}">`;
+        });
+      } else {
+        imageHtml = '<p class="text-center text-757575">No images available.</p>';
+      }
+      document.getElementById("detailImages").innerHTML = imageHtml;
+      showScreen("product-detail-screen");
+    }
+
+    function setupSearchAndFilters() {
+      const searchBar = document.getElementById("searchBar");
+      const mobileSearchBar = document.getElementById("mobileSearchBar");
+      const filterCategory = document.getElementById("filterCategory");
+      const sortBy = document.getElementById("sortBy");
+      const groupBy = document.getElementById("groupBy");
+      if (searchBar) searchBar.addEventListener("input", showFeed);
+      if (mobileSearchBar) mobileSearchBar.addEventListener("input", () => {
+        if (searchBar) searchBar.value = mobileSearchBar.value;
+        showFeed();
+      });
+      if (filterCategory) filterCategory.addEventListener("change", showFeed);
+      if (sortBy) sortBy.addEventListener("change", showFeed);
+      if (groupBy) groupBy.addEventListener("change", showFeed);
+    }
+
+    function showProfile() {
+      if (!currentUser) {
+        alert("Please log in to view your profile.");
+        showScreen("login-screen");
+        return;
+      }
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+      let user = users[currentUser.email];
+      document.getElementById("profilePic").src = user.profilePic || '';
+      document.getElementById("profilePic").classList.toggle('no-img', !user.profilePic);
+      document.getElementById("userName").textContent = user.name || 'Apt Mongoose';
+      document.getElementById("userEmail").textContent = currentUser.email;
+      document.getElementById("userJoined").textContent = user.joined || new Date().toLocaleDateString();
+    }
+
+    function editProfile() {
+      if (!currentUser) {
+        alert("Please log in to edit your profile.");
+        showScreen("login-screen");
+        return;
+      }
+      let users = JSON.parse(localStorage.getItem("users")) || {};
+      let user = users[currentUser.email];
+      document.getElementById("editProfilePic").src = user.profilePic || '';
+      document.getElementById("editProfilePic").classList.toggle('no-img', !user.profilePic);
+      document.getElementById("editUserName").value = user.name || 'Apt Mongoose';
+      document.getElementById("editUserEmail").value = currentUser.email;
+      showScreen("edit-profile-screen");
+    }
+
+    function saveProfile() {
+      if (!currentUser) {
+        alert("Please log in to save your profile.");
+        showScreen("login-screen");
+        return;
+      }
+      const name = document.getElementById("editUserName").value.trim();
+      const email = document.getElementById("editUserEmail").value.trim();
+      const imageInput = document.getElementById("editProfileImage");
+      let profilePic = null;
+      if (imageInput.files && imageInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          profilePic = e.target.result;
+          saveProfileData(profilePic);
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        saveProfileData(profilePic);
+      }
+
+      function saveProfileData(profilePic) {
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+        if (users[currentUser.email]) {
+          users[currentUser.email].name = name || 'Apt Mongoose';
+          if (profilePic) users[currentUser.email].profilePic = profilePic;
+          localStorage.setItem("users", JSON.stringify(users));
+          alert("Profile updated successfully!");
+          showProfile();
+          showScreen("profile-screen");
+        }
+      }
+    }
+
+    window.onload = () => {
+      let email = localStorage.getItem("currentUser");
+      if (email) {
+        currentUser = { email };
+        showScreen("feed-screen");
+      } else {
+        showScreen("login-screen");
+      }
+      setupSearchAndFilters();
+    };
+  </script>
+</body>
+</html>
